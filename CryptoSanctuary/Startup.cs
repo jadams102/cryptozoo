@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using CryptoSanctuary.Models;
 
 namespace CryptoSanctuary
 {
@@ -29,6 +29,11 @@ namespace CryptoSanctuary
         {
             // Add framework services.
             services.AddMvc();
+            services.AddEntityFrameworkMySql()
+           .AddDbContext<CryptidDBContext>(options =>
+                                     options
+                                          .UseMySql(Configuration["ConnectionStrings:DefaultConnection"]));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +59,11 @@ namespace CryptoSanctuary
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Hello Joel");
             });
         }
     }
